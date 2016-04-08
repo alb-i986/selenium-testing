@@ -57,7 +57,6 @@ public abstract class JUnit4TestBase implements WrapsDriver {
   private Browser browser = Browser.detect();
   protected TestEnvironment environment;
   protected AppServer appServer;
-  protected Pages pages;
   private static ThreadLocal<WebDriver> storedDriver = new ThreadLocal<>();
   protected WebDriver driver;
   protected Wait<WebDriver> wait;
@@ -67,8 +66,6 @@ public abstract class JUnit4TestBase implements WrapsDriver {
   public void prepareEnvironment() throws Exception {
     environment = GlobalTestEnvironment.get(InProcessTestEnvironment.class);
     appServer = environment.getAppServer();
-
-    pages = new Pages(appServer);
 
     String hostName = environment.getAppServer().getHostName();
     String alternateHostName = environment.getAppServer().getAlternateHostName();
