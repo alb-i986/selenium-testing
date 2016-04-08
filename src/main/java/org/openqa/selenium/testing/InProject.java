@@ -21,6 +21,7 @@ import org.openqa.selenium.WebDriverException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 
 public class InProject {
   /**
@@ -28,7 +29,7 @@ public class InProject {
    *
    * @param path path to file to locate from root of project
    * @return file being sought, if it exists
-   * @throws org.openqa.selenium.WebDriverException wrapped FileNotFoundException if file could not
+   * @throws WebDriverException wrapped FileNotFoundException if file could not
    *         be found
    */
   public static File locate(String path) {
@@ -43,5 +44,21 @@ public class InProject {
 
     throw new WebDriverException(new FileNotFoundException(
         "Could not find " + path + " in the project"));
+  }
+
+  public static File locateInClasspath(String path) {
+    try {
+      return new File(InProject.class.getResource(String.format("/%s", path)).toURI());
+    } catch (URISyntaxException e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  public static File locateInClasspath(Class clazz, String path) {
+    try {
+      return new File(clazz.getResource(path).toURI());
+    } catch (URISyntaxException e) {
+      throw new AssertionError(e);
+    }
   }
 }

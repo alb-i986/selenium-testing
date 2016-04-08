@@ -19,7 +19,6 @@ package org.openqa.selenium.environment.webserver;
 
 import com.google.common.collect.ImmutableList;
 import org.openqa.selenium.net.NetworkUtils;
-import org.openqa.selenium.testing.InProject;
 import org.seleniumhq.jetty9.http.HttpVersion;
 import org.seleniumhq.jetty9.http.MimeTypes;
 import org.seleniumhq.jetty9.server.Connector;
@@ -48,7 +47,7 @@ import java.io.IOException;
 import java.util.EnumSet;
 
 import static org.openqa.selenium.net.PortProber.findFreePort;
-import static org.openqa.selenium.testing.InProject.locate;
+import static org.openqa.selenium.testing.InProject.locateInClasspath;
 
 public class JettyAppServer implements AppServer {
 
@@ -93,11 +92,10 @@ public class JettyAppServer implements AppServer {
 
     handlers = new ContextHandlerCollection();
 
-    ServletContextHandler defaultContext = addResourceHandler(
-        DEFAULT_CONTEXT_PATH, locate("common/src/web"));
-    addResourceHandler(JS_SRC_CONTEXT_PATH, locate("javascript"));
-    addResourceHandler(CLOSURE_CONTEXT_PATH, locate("third_party/closure/goog"));
-    addResourceHandler(THIRD_PARTY_JS_CONTEXT_PATH, locate("third_party/js"));
+    ServletContextHandler defaultContext = addResourceHandler(DEFAULT_CONTEXT_PATH, locateInClasspath("web"));
+    addResourceHandler(JS_SRC_CONTEXT_PATH, locateInClasspath(JettyAppServer.class, "javascript"));
+    addResourceHandler(CLOSURE_CONTEXT_PATH, locateInClasspath(JettyAppServer.class, "third_party/closure/goog"));
+    addResourceHandler(THIRD_PARTY_JS_CONTEXT_PATH, locateInClasspath(JettyAppServer.class, "third_party/js"));
 
     server.setHandler(handlers);
 
@@ -214,7 +212,7 @@ public class JettyAppServer implements AppServer {
   }
 
   protected File getKeyStore() {
-    return InProject.locate("java/client/test/org/openqa/selenium/environment/webserver/keystore");
+    return locateInClasspath(JettyAppServer.class, "keystore");
   }
 
   @Override
