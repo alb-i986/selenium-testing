@@ -85,7 +85,6 @@ public class WebDriverBuilder implements Supplier<WebDriver> {
     suppliers.add(new ExternalDriverSupplier(desiredCaps, requiredCaps));
     suppliers.add(new SauceBackedDriverSupplier(desiredCaps));
     suppliers.add(new RemoteSupplier(desiredCaps, requiredCaps));
-    suppliers.add(new PhantomJSDriverSupplier(desiredCaps));
     suppliers.add(new TestInternetExplorerSupplier(desiredCaps));
     suppliers.add(new ReflectionBackedDriverSupplier(desiredCaps, requiredCaps));
     suppliers.add(new DefaultDriverSupplier(desiredCaps, requiredCaps));
