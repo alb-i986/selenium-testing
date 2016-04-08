@@ -18,21 +18,15 @@
 package org.openqa.selenium.testing.drivers;
 
 import com.google.common.base.Throwables;
-import com.google.common.io.Files;
-import org.openqa.selenium.Build;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.net.PortProber;
 import org.openqa.selenium.net.UrlChecker;
 import org.openqa.selenium.os.CommandLine;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.testing.InProject;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -63,8 +57,6 @@ public class OutOfProcessSeleniumServer {
       throw new RuntimeException("Server already started");
     }
 
-    String classPath = buildServerAndClasspath();
-
     int port = PortProber.findFreePort();
     String localAddress = new NetworkUtils().getPrivateLocalAddress();
     baseUrl = String.format("http://%s:%d", localAddress, port);
@@ -72,7 +64,7 @@ public class OutOfProcessSeleniumServer {
     List<String> cmdLine = new LinkedList<String>();
     cmdLine.add("java");
     cmdLine.add("-cp");
-    cmdLine.add(classPath);
+    cmdLine.add(System.getProperty("java.class.path"));
     cmdLine.add("org.openqa.grid.selenium.GridLauncher");
     cmdLine.add("-port");
     cmdLine.add(String.valueOf(port));
@@ -85,7 +77,7 @@ public class OutOfProcessSeleniumServer {
     if (Boolean.getBoolean("webdriver.development")) {
       command.copyOutputTo(System.err);
     }
-    command.setWorkingDirectory(InProject.locate("Rakefile").getParentFile().getAbsolutePath());
+//    command.setWorkingDirectory(InProject.locate("Rakefile").getParentFile().getAbsolutePath());
     log.info("Starting selenium server: " + command.toString());
     command.executeAsync();
 
@@ -120,22 +112,6 @@ public class OutOfProcessSeleniumServer {
     command.destroy();
     log.info("Selenium server stopped");
     command = null;
-  }
-
-  private String buildServerAndClasspath() {
-    new Build().of("//java/server/src/org/openqa/grid/selenium:selenium")
-        .of("//java/server/src/org/openqa/grid/selenium:selenium:classpath")
-        .go();
-
-    String classpathFile = InProject.locate(
-        "build/java/server/src/org/openqa/grid/selenium/selenium.classpath").getAbsolutePath();
-    try {
-      return Files.readFirstLine(new File(classpathFile), Charset.defaultCharset());
-    } catch (IOException e) {
-      Throwables.propagate(e);
-    }
-
-    return "";
   }
 
   public URL getWebDriverUrl() {
